@@ -1,8 +1,17 @@
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Home from "./pages/Home";
+
 function App() {
   return (
-    <div>
-      <h1 className="text-3xl">Hello World React App</h1>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" Component={Home} />
+        <Route path="login" Component={Login} />
+        <Route path="register" Component={Register} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
