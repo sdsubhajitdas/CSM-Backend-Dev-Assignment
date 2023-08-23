@@ -1,11 +1,32 @@
 const express = require("express");
+const mongoose = require("mongoose");
+const cookieParser = require("cookie-parser");
+const { errorHandler } = require("./middlewares/error");
+const authenticationRouter = require("./routes/authentication");
+require("dotenv").config();
+
 const app = express();
-const port = 4000;
+app.use(express.json());
+app.use(cookieParser());
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
+const router = express.Router();
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
-});
+// Prefixing all the backend routes with /api
+app.use("/api", router);
+
+router.use("/authentication", authenticationRouter);
+
+router.use(errorHandler);
+
+mongoose
+  .connect(process.env.MONGODB_URL)
+  .then((_) => {
+    app.listen(process.env.PORT, () => {
+      console.log(
+        `DB connected and server running on port ${process.env.PORT}`
+      );
+    });
+  })
+  .catch((error) => {
+    console.error("DB connection failed: " + error.message);
+  });
