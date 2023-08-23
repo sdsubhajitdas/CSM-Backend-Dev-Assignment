@@ -20,21 +20,20 @@ router.post("/login", async (req, res, next) => {
     return next(error);
   }
   const { email, password } = validatedResult;
+  const invalidUserError = new Error("Incorrect email or password");
+  invalidUserError.statusCode = 400;
+
   // Checking if user exists
   let userFromDb = await User.findOne({ email });
   if (!userFromDb) {
-    const error = new Error("User does not exist");
-    error.statusCode = 400;
-    return next(error);
+    return next(invalidUserError);
   }
 
   try {
     // Comparing if the passwords match or not.
     const isPasswordCorrect = bcrypt.compareSync(password, userFromDb.password);
     if (!isPasswordCorrect) {
-      const error = new Error("User does not exist");
-      error.statusCode = 400;
-      throw error;
+      throw invalidUserError;
     }
 
     // Converting to Object and removing the password field
