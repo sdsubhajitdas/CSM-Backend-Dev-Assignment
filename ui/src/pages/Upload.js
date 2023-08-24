@@ -29,6 +29,7 @@ export default function Upload() {
         selectedFiles={selectedFiles}
         setSelectedFiles={setSelectedFiles}
       />
+
       <FileUploadList selectedFiles={selectedFiles} />
 
       <div className="flex justify-between max-w-xl mx-auto mt-10">
