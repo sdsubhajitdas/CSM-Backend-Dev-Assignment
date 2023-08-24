@@ -6,7 +6,7 @@ export default function FileUploadList({ selectedFiles }) {
       {selectedFiles.map((file) => (
         <li key={file.name} className="relative px-2 py-3 bg-blue-100 rounded">
           <FileImage className="inline w-16 h-16" />
-          <span className="absolute text-xl italic font-semibold top-3 right-3 left-24">
+          <span className="absolute text-xl italic font-semibold truncate top-3 right-3 left-24">
             {file.name}
           </span>
           <span className="absolute italic bottom-4 right-3 left-24">

@@ -16,6 +16,13 @@ const uploadFolderPreprocessor = (req, res, next) => {
   next();
 };
 const upload = multer({
+  fileFilter: function (req, file, callback) {
+    const type = file.mimetype.split("/")[0];
+    callback(
+      type === "image" ? null : new Error("Only images formats allowed"),
+      type === "image"
+    );
+  },
   storage: multerS3({
     s3: s3Client,
     bucket: process.env.AWS_S3_BUCKET,
