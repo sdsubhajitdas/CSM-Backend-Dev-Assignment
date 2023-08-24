@@ -2,7 +2,11 @@ import { useRef } from "react";
 import { UploadCloud } from "lucide-react";
 import useAuthentication from "../hooks/useAuthentication";
 
-export default function FileUploadBox({ selectedFiles, setSelectedFiles }) {
+export default function FileUploadBox({
+  selectedFiles,
+  setSelectedFiles,
+  disabled,
+}) {
   const uploadBoxRef = useRef(null);
   const {
     authentication: { user },
@@ -37,7 +41,9 @@ export default function FileUploadBox({ selectedFiles, setSelectedFiles }) {
         className="absolute top-0 bottom-0 left-0 right-0 m-4 opacity-0"
         type="file"
         onChange={handleFileDrop}
+        accept="image/*"
         multiple={user.subscription.tier === "PRO"}
+        disabled={disabled}
       />
     </div>
   );
