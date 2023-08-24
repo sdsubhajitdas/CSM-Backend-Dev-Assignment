@@ -1,5 +1,5 @@
-import { useState, createContext } from "react";
-// import axios from "../api/axios";
+import { useState, createContext, useEffect } from "react";
+import axios from "../api/axios";
 
 const AuthenticationContext = createContext({});
 
@@ -9,18 +9,24 @@ export function AuthenticationProvider({ children }) {
     user: null,
   });
 
-  // useEffect(() => {
-  //   axios
-  //     .get("/auth/refresh")
-  //     .then((response) => {
-  //       setAuthentication((previous) => ({
-  //         ...previous,
-  //         isAuthenticated: true,
-  //         user: response.data,
-  //       }));
-  //     })
-  //     .catch((err) => console.error(err));
-  // }, []);
+  useEffect(() => {
+    axios
+      .get("api/authentication/refresh")
+      .then((response) => {
+        setAuthentication((previous) => ({
+          ...previous,
+          isAuthenticated: true,
+          user: response.data,
+        }));
+      })
+      .catch((err) => {
+        setAuthentication((previous) => ({
+          ...previous,
+          isAuthenticated: false,
+          user: null,
+        }));
+      });
+  }, []);
 
   return (
     <AuthenticationContext.Provider

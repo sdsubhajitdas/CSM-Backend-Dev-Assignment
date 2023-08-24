@@ -124,7 +124,8 @@ router.get("/refresh", async (req, res, next) => {
 
   try {
     const { _id } = verifyRefreshToken(refreshToken);
-    let user = await User.findById(_id)._doc;
+    let user = await User.findById(_id);
+    user = user._doc;
     delete user.password;
     const accessToken = getAccessToken(user);
     res.send({ ...user, accessToken });
