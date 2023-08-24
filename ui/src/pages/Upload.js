@@ -1,15 +1,16 @@
 import { useState } from "react";
 import Alert from "../components/Alert";
 import { Link, Navigate } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import FileUploadBox from "../components/FileUploadBox";
 import FileUploadList from "../components/FileUploadList";
 import useAuthentication from "../hooks/useAuthentication";
 import { UploadCloud, ArrowLeftSquare } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function Upload() {
   const axios = useAxiosPrivate();
+  const queryClient = useQueryClient();
   const [selectedFiles, setSelectedFiles] = useState([]);
   const {
     authentication: { user },
@@ -20,6 +21,9 @@ export default function Upload() {
       const formData = new FormData();
       formData.append("file", selectedFiles[0]);
       return axios.post("/api/file/upload", formData);
+    },
+    onSuccess: () => {
+      queryClient.refetchQueries({ queryKey: ["get_images"] });
     },
   });
 

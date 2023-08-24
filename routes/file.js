@@ -29,7 +29,7 @@ const upload = multer({
     acl: "public-read",
     contentType: multerS3.AUTO_CONTENT_TYPE,
     key: function (req, file, cb) {
-      cb(null, `${req.uploadFolder}/${file.originalname}-${Date.now()}`);
+      cb(null, `${req.uploadFolder}/${Date.now()}-${file.originalname}`);
     },
   }),
 });

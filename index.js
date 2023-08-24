@@ -1,10 +1,12 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const fileRouter = require("./routes/file");
 const cookieParser = require("cookie-parser");
+const imageRouter = require("./routes/image");
 const { errorHandler } = require("./middlewares/error");
 const authenticationRouter = require("./routes/authentication");
-const fileRouter = require("./routes/file");
 const { checkAuthentication } = require("./middlewares/authentication");
+
 require("dotenv").config();
 
 const app = express();
@@ -22,6 +24,7 @@ router.use("/authentication", authenticationRouter);
 router.use(checkAuthentication);
 
 router.use("/file", fileRouter);
+router.use("/image", imageRouter);
 
 // Error handling middleware
 router.use(errorHandler);
