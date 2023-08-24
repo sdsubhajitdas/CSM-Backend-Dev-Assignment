@@ -7,7 +7,7 @@ const userSchema = Schema({
   password: { type: String, required: true },
   createTimestamp: { type: Date, default: Date.now },
   subscription: {
-    tier: { type: String, enum: ["FREE", "PAID"], default: "FREE" },
+    tier: { type: String, enum: ["FREE", "PRO"], default: "FREE" },
     lastRenewedTimestamp: { type: Date, default: null },
   },
 });
