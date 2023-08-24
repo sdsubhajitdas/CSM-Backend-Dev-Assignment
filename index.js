@@ -3,6 +3,8 @@ const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const { errorHandler } = require("./middlewares/error");
 const authenticationRouter = require("./routes/authentication");
+const fileRouter = require("./routes/file");
+const { checkAuthentication } = require("./middlewares/authentication");
 require("dotenv").config();
 
 const app = express();
@@ -16,6 +18,12 @@ app.use("/api", router);
 
 router.use("/authentication", authenticationRouter);
 
+// Protected routes
+router.use(checkAuthentication);
+
+router.use("/file", fileRouter);
+
+// Error handling middleware
 router.use(errorHandler);
 
 mongoose

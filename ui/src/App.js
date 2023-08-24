@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import Navbar from "./components/Navbar";
 import ProtectedRoutes from "./utils/ProtectedRoutes";
 import ContextProviders from "./contexts";
+import Upload from "./pages/Upload";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route element={<ProtectedRoutes />}>
             <Route element={<Screen />}>
               <Route path="/" Component={Home} />
+              <Route path="/upload" Component={Upload} />
             </Route>
           </Route>
         </Routes>
@@ -30,7 +32,7 @@ function Screen() {
   return (
     <>
       <Navbar />
-      <div className="container mx-auto">
+      <div className="container mx-auto mt-5">
         <Outlet />
       </div>
     </>

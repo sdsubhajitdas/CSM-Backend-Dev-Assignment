@@ -36,7 +36,7 @@ function LogoutButton() {
 
   return (
     <button
-      className="px-3 py-1.5 bg-white border border-black rounded font-medium text-black"
+      className="px-3 py-1.5 bg-white border border-black rounded font-medium text-black hover:bg-blue-100"
       onClick={logout}
     >
       Logout
