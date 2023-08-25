@@ -6,6 +6,7 @@ const userSchema = Schema({
   email: { type: String, required: true },
   password: { type: String, required: true },
   createTimestamp: { type: Date, default: Date.now },
+  lastUploadTimestamp: { type: Date },
   subscription: {
     tier: { type: String, enum: ["FREE", "PRO"], default: "FREE" },
     lastRenewedTimestamp: { type: Date, default: null },

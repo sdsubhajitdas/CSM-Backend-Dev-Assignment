@@ -1,9 +1,10 @@
-const { Router } = require("express");
 const multer = require("multer");
+const { Router } = require("express");
 const multerS3 = require("multer-s3");
-const { fromEnv } = require("@aws-sdk/credential-providers");
-const { S3Client } = require("@aws-sdk/client-s3");
+const { User } = require("../models/User");
 const { Image } = require("../models/Image");
+const { S3Client } = require("@aws-sdk/client-s3");
+const { fromEnv } = require("@aws-sdk/credential-providers");
 
 require("dotenv").config();
 
@@ -48,6 +49,10 @@ router.post(
         uploadMetadata: req.file,
       });
       await image.save();
+      await User.findByIdAndUpdate(req.user._id, {
+        lastUploadTimestamp: image.createTimestamp,
+      });
+
       res.status(201).send(image);
     } catch (error) {
       next(error);
