@@ -3,7 +3,7 @@ const { Router } = require("express");
 const router = Router();
 
 router.post("/stripe", async (req, res) => {
-  console.log(req.body);
+  // console.log(req.body);
   res.send({});
 });
 
