@@ -9,12 +9,22 @@ export default function Navbar() {
 
   return (
     <nav className="flex gap-5 px-5 py-3 text-white bg-blue-500">
-      <Link to="/" className="text-3xl font-bold">
+      <Link to="/" className="my-auto text-3xl font-bold">
         CSM Assignment
       </Link>
-      <span className="my-auto ml-auto text-xl font-medium">
+      <span className="my-auto ml-auto text-xl font-medium leading-none">
         Welcome back {user.fullName}
+        {user.subscription.tier === "PRO" ? (
+          <>
+            <br />
+            <span className="text-sm font-normal">
+              Subscription expires at{" "}
+              {new Date(user.subscription.expiryTimestamp).toDateString()}
+            </span>
+          </>
+        ) : null}
       </span>
+
       <SubscriptionTier variant={user.subscription.tier} />
       <LogoutButton />
     </nav>
