@@ -6,22 +6,19 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const router = Router();
 
 router.post("/subscribe", async (req, res, next) => {
-  // Create/Get a customer
+  // Create a customer
   // Create a subscription
   // Send back the client secret
   const { paymentMethod } = req.body;
   try {
-    const customerId = req.user.subscription.stripeCustomerId;
-    const customer = customerId
-      ? { id: customerId }
-      : await stripe.customers.create({
-          email: req.user.email,
-          name: req.user.fullName,
-          payment_method: paymentMethod,
-          invoice_settings: {
-            default_payment_method: paymentMethod,
-          },
-        });
+    const customer = await stripe.customers.create({
+      email: req.user.email,
+      name: req.user.fullName,
+      payment_method: paymentMethod,
+      invoice_settings: {
+        default_payment_method: paymentMethod,
+      },
+    });
 
     const subscription = await stripe.subscriptions.create({
       customer: customer.id,
@@ -69,11 +66,26 @@ router.post("/success", async (req, res, next) => {
   }
 });
 
+router.post("/fail", async (req, res, next) => {
+  try {
+    const { customer, subscription } = req.body;
+
+    await stripe.subscriptions.cancel(subscription.id);
+    await stripe.customers.del(customer.id);
+
+    res.send({ message: "Payment Unsuccessful" });
+  } catch (err) {
+    next(err);
+  }
+});
+
 router.post("/unsubscribe", async (req, res, next) => {
   try {
     const subscriptionId = req.user.subscription.stripeSubscriptionId;
-    if (subscriptionId) {
+    const customerId = req.user.subscription.stripeCustomerId;
+    if (subscriptionId && customerId) {
       await stripe.subscriptions.cancel(subscriptionId);
+      await stripe.customers.del(customerId);
       const user = await User.findByIdAndUpdate(
         req.user._id,
         {
@@ -82,7 +94,7 @@ router.post("/unsubscribe", async (req, res, next) => {
             createTimestamp: null,
             expiryTimestamp: null,
             stripeSubscriptionId: null,
-            stripeCustomerId: req.user.subscription.stripeCustomerId,
+            stripeCustomerId: null,
           },
         },
         { new: true }

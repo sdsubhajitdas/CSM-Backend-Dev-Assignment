@@ -19,9 +19,19 @@ export default function CheckoutForm() {
     setAuthentication,
   } = useAuthentication();
   const [paymentStatus, setPaymentStatus] = useState(null);
+  const [cardErrors, setCardErrors] = useState({
+    cardNumber: "Required field",
+    cardExpiry: "Required field",
+    cardCvc: "Required field",
+  });
 
   async function handleOnSubmit(e) {
     e.preventDefault();
+    if (!stripe || !elements) return;
+
+    await elements.submit();
+    const formError = Object.entries(cardErrors).find((err) => !!err[1]);
+    if (formError) return;
 
     try {
       setPaymentStatus("Initiating payment. Please do not refresh");
@@ -42,6 +52,10 @@ export default function CheckoutForm() {
 
       if (response.error) {
         setPaymentStatus(`Error occurred: ${response.error.message}`);
+        await axios.post("/api/payment/fail", {
+          customer,
+          subscription,
+        });
       } else {
         setPaymentStatus("Almost there...");
         response = await axios.post("/api/payment/success", {
@@ -102,15 +116,65 @@ export default function CheckoutForm() {
             />
           </div>
         </div>
-        <CardDetailsBlock title="Card number">
-          <CardNumberElement className="w-full p-3 border border-black rounded p- disabled:bg-gray-200" />
+        <CardDetailsBlock
+          title="Card number"
+          id="cardNumber"
+          errors={cardErrors}
+        >
+          <CardNumberElement
+            className="w-full p-3 border border-black rounded disabled:bg-gray-200"
+            onChange={(e) =>
+              setCardErrors((previous) => ({
+                ...previous,
+                cardNumber: e.complete
+                  ? null
+                  : e.error
+                  ? e.error.message
+                  : "Your card number is incomplete.",
+              }))
+            }
+          />
         </CardDetailsBlock>
         <div className="flex gap-3">
-          <CardDetailsBlock title="Expiration" className="grow">
-            <CardExpiryElement className="w-full p-3 border border-black rounded p- disabled:bg-gray-200" />
+          <CardDetailsBlock
+            title="Expiration"
+            className="grow"
+            id="cardExpiry"
+            errors={cardErrors}
+          >
+            <CardExpiryElement
+              className="w-full p-3 border border-black rounded disabled:bg-gray-200"
+              onChange={(e) =>
+                setCardErrors((previous) => ({
+                  ...previous,
+                  cardExpiry: e.complete
+                    ? null
+                    : e.error
+                    ? e.error.message
+                    : "Your card's expiry date is incomplete.",
+                }))
+              }
+            />
           </CardDetailsBlock>
-          <CardDetailsBlock title="CVC" className="grow">
-            <CardCvcElement className="w-full p-3 border border-black rounded p- disabled:bg-gray-200" />
+          <CardDetailsBlock
+            title="CVC"
+            className="grow"
+            id="cardCvc"
+            errors={cardErrors}
+          >
+            <CardCvcElement
+              className="w-full p-3 border border-black rounded disabled:bg-gray-200"
+              onChange={(e) =>
+                setCardErrors((previous) => ({
+                  ...previous,
+                  cardCvc: e.complete
+                    ? null
+                    : e.error
+                    ? e.error.message
+                    : "Your card's security code is incomplete.",
+                }))
+              }
+            />
           </CardDetailsBlock>
         </div>
         <div className="flex justify-between">
@@ -138,11 +202,12 @@ export default function CheckoutForm() {
   );
 }
 
-function CardDetailsBlock({ title, className, children }) {
+function CardDetailsBlock({ title, className, children, id, errors }) {
   return (
     <div className={className}>
       <label className="block text-sm text-gray-700">{title}</label>
       {children}
+      <span className="text-sm text-red-500">{errors[`${id}`]}</span>
     </div>
   );
 }

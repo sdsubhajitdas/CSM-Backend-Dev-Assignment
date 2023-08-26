@@ -101,7 +101,7 @@ router.post(
 
       images = await Image.insertMany(images);
       await User.findByIdAndUpdate(req.user._id, {
-        lastUploadTimestamp: Date.now() * 1000,
+        lastUploadTimestamp: Date.now(),
       });
 
       res.status(201).send(images);
