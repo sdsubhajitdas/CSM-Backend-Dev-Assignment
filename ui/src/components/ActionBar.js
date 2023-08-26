@@ -16,7 +16,6 @@ export default function ActionBar() {
       return axios.post("api/payment/unsubscribe");
     },
     onSuccess: (data) => {
-      console.log("running");
       setAuthentication((previous) => ({
         ...previous,
         user: { ...previous.user, ...data.data.user },

@@ -11,14 +11,17 @@ router.post("/subscribe", async (req, res, next) => {
   // Send back the client secret
   const { paymentMethod } = req.body;
   try {
-    const customer = await stripe.customers.create({
-      email: req.user.email,
-      name: req.user.fullName,
-      payment_method: paymentMethod,
-      invoice_settings: {
-        default_payment_method: paymentMethod,
-      },
-    });
+    const customerId = req.user.subscription.stripeCustomerId;
+    const customer = customerId
+      ? { id: customerId }
+      : await stripe.customers.create({
+          email: req.user.email,
+          name: req.user.fullName,
+          payment_method: paymentMethod,
+          invoice_settings: {
+            default_payment_method: paymentMethod,
+          },
+        });
 
     const subscription = await stripe.subscriptions.create({
       customer: customer.id,
@@ -79,6 +82,7 @@ router.post("/unsubscribe", async (req, res, next) => {
             createTimestamp: null,
             expiryTimestamp: null,
             stripeSubscriptionId: null,
+            stripeCustomerId: req.user.subscription.stripeCustomerId,
           },
         },
         { new: true }
