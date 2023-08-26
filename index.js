@@ -4,6 +4,7 @@ const fileRouter = require("./routes/file");
 const cookieParser = require("cookie-parser");
 const imageRouter = require("./routes/image");
 const paymentRouter = require("./routes/payment");
+const webhookRouter = require("./routes/webhook");
 const { errorHandler } = require("./middlewares/error");
 const authenticationRouter = require("./routes/authentication");
 const { checkAuthentication } = require("./middlewares/authentication");
@@ -20,6 +21,7 @@ const router = express.Router();
 app.use("/api", router);
 
 router.use("/authentication", authenticationRouter);
+router.use("/webhook", webhookRouter);
 
 // Protected routes
 router.use(checkAuthentication);

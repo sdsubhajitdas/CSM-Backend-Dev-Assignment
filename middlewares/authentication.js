@@ -6,20 +6,15 @@ async function checkAuthentication(req, res, next) {
     ? req.get("authorization").split(" ")[1]
     : null;
 
-  const unauthorizedUserError = new Error(
-    "Unauthorized to perform this action"
-  );
-  unauthorizedUserError.statusCode = 403;
-
   if (!accessToken) {
-    throw unauthorizedUserError;
+    return res.status(403).send("Unauthorized to perform this action");
   }
 
   try {
     const verified = verifyAccessToken(accessToken);
     const verifiedUser = await User.findById(verified._id);
     if (!verifiedUser) {
-      throw unauthorizedUserError;
+      return res.status(403).send("Unauthorized to perform this action");
     }
 
     req.user = verifiedUser;
