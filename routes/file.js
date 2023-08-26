@@ -12,10 +12,6 @@ const router = Router();
 const s3Client = new S3Client({
   credentials: fromEnv(),
 });
-const uploadFolderPreprocessor = (req, res, next) => {
-  req.uploadFolder = `${req.user.email}-${req.user._id}`;
-  next();
-};
 const upload = multer({
   fileFilter: function (req, file, callback) {
     const type = file.mimetype.split("/")[0];
@@ -35,8 +31,29 @@ const upload = multer({
   }),
 });
 
+function applyUploadConstraints(req, res, next) {
+  if (req.user.subscription.tier === "PRO") return next();
+
+  let timeDifference = Math.ceil(
+    (Date.now() - new Date(req.user.lastUploadTimestamp).getTime()) / 1000
+  );
+  if (timeDifference >= 3600) return next();
+
+  res.status(400).send({
+    message: `Free tier users can only upload one image an hour. You can again upload in ${Math.ceil(
+      60 - timeDifference / 60
+    )} minutes`,
+  });
+}
+
+function uploadFolderPreprocessor(req, res, next) {
+  req.uploadFolder = `${req.user.email}-${req.user._id}`;
+  next();
+}
+
 router.post(
   "/upload",
+  applyUploadConstraints,
   uploadFolderPreprocessor,
   upload.single("file"),
   async (req, res, next) => {
