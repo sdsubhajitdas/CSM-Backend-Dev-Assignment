@@ -10,7 +10,7 @@ export default function Navbar() {
   return (
     <nav className="flex gap-5 px-5 py-3 text-white bg-blue-500">
       <Link to="/" className="text-3xl font-bold">
-        Assignment
+        CSM Assignment
       </Link>
       <span className="my-auto ml-auto text-xl font-medium">
         Welcome back {user.fullName}
