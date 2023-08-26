@@ -66,4 +66,33 @@ router.post("/success", async (req, res, next) => {
   }
 });
 
+router.post("/unsubscribe", async (req, res, next) => {
+  try {
+    const subscriptionId = req.user.subscription.stripeSubscriptionId;
+    if (subscriptionId) {
+      await stripe.subscriptions.cancel(subscriptionId);
+      const user = await User.findByIdAndUpdate(
+        req.user._id,
+        {
+          subscription: {
+            tier: "FREE",
+            createTimestamp: null,
+            expiryTimestamp: null,
+            stripeSubscriptionId: null,
+          },
+        },
+        { new: true }
+      );
+
+      res.send({ message: "Subscription Cancelled", user: user });
+    } else {
+      const error = new Error("No active subscription");
+      error.statusCode = 400;
+      next(error);
+    }
+  } catch (err) {
+    next(err);
+  }
+});
+
 module.exports = router;
