@@ -7,7 +7,7 @@ const router = Router();
 
 router.post("/subscribe", async (req, res, next) => {
   // Create/Get a customer
-  // Create/Delete a subscription
+  // Create a subscription
   // Send back the client secret
   const { paymentMethod } = req.body;
   try {
