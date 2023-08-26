@@ -16,6 +16,7 @@ export default function CheckoutForm() {
   const axios = useAxiosPrivate();
   const {
     authentication: { user },
+    setAuthentication,
   } = useAuthentication();
   const [paymentStatus, setPaymentStatus] = useState(null);
 
@@ -30,25 +31,39 @@ export default function CheckoutForm() {
       });
 
       setPaymentStatus("Processing payment...");
-      const { data: subscriptionData } = await axios.post(
-        "/api/payment/subscribe",
-        {
-          paymentMethod: paymentMethod.id,
-        }
-      );
+      const {
+        data: { clientSecret, customer, subscription },
+      } = await axios.post("/api/payment/subscribe", {
+        paymentMethod: paymentMethod.id,
+      });
+
       setPaymentStatus("Verifying payment status...");
-      const response = await stripe.confirmCardPayment(
-        subscriptionData.clientSecret
-      );
+      let response = await stripe.confirmCardPayment(clientSecret);
 
       if (response.error) {
         setPaymentStatus(`Error occurred: ${response.error.message}`);
       } else {
+        setPaymentStatus("Almost there...");
+        response = await axios.post("/api/payment/success", {
+          customer,
+          subscription,
+        });
+
         setPaymentStatus("🎉 Congratulations you are now a Pro member");
-        console.log(response);
+
+        setAuthentication((previous) => ({
+          ...previous,
+          user: { ...previous.user, ...response.data.user },
+        }));
       }
     } catch (error) {
-      setPaymentStatus(`Error occurred: ${error.response.data.message}`);
+      setPaymentStatus(
+        `Error occurred: ${
+          error?.response?.data?.message
+            ? error.response.data.message
+            : error.message
+        }`
+      );
     }
   }
 
@@ -101,12 +116,16 @@ export default function CheckoutForm() {
         <div className="flex justify-between">
           <button
             type="submit"
-            className="px-3 py-2 text-lg text-white bg-blue-500 rounded hover:bg-blue-700"
+            className="px-3 py-2 text-lg text-white bg-blue-500 rounded hover:bg-blue-700 disabled:bg-gray-500"
+            disabled={paymentStatus ? true : false}
           >
             Proceed to pay $5.00
           </button>
           <Link to="/">
-            <button className="px-3 py-2 text-lg text-white bg-red-500 rounded hover:bg-red-700">
+            <button
+              className="px-3 py-2 text-lg text-white bg-red-500 rounded hover:bg-red-700 disabled:bg-gray-500"
+              disabled={paymentStatus ? true : false}
+            >
               Cancel
             </button>
           </Link>

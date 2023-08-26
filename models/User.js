@@ -9,7 +9,10 @@ const userSchema = Schema({
   lastUploadTimestamp: { type: Date },
   subscription: {
     tier: { type: String, enum: ["FREE", "PRO"], default: "FREE" },
-    lastRenewedTimestamp: { type: Date, default: null },
+    createTimestamp: { type: Date, default: null },
+    expiryTimestamp: { type: Date, default: null },
+    stripeCustomerId: { type: String, default: null },
+    stripeSubscriptionId: { type: String, default: null },
   },
 });
 
