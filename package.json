@@ -17,6 +17,8 @@
   "dependencies": {
     "@aws-sdk/client-s3": "3.398.0",
     "@aws-sdk/credential-providers": "3.398.0",
+    "@stripe/react-stripe-js": "2.1.2",
+    "@stripe/stripe-js": "2.1.0",
     "bcrypt": "5.1.1",
     "cookie-parser": "1.4.6",
     "dotenv": "16.3.1",

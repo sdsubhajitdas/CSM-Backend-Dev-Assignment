@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const fileRouter = require("./routes/file");
 const cookieParser = require("cookie-parser");
 const imageRouter = require("./routes/image");
+const paymentRouter = require("./routes/payment");
 const { errorHandler } = require("./middlewares/error");
 const authenticationRouter = require("./routes/authentication");
 const { checkAuthentication } = require("./middlewares/authentication");
@@ -25,6 +26,7 @@ router.use(checkAuthentication);
 
 router.use("/file", fileRouter);
 router.use("/image", imageRouter);
+router.use("/payment", paymentRouter);
 
 // Error handling middleware
 router.use(errorHandler);

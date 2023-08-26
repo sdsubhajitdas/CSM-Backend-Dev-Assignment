@@ -1,11 +1,12 @@
-import { BrowserRouter, Route, Routes, Outlet } from "react-router-dom";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
 import Home from "./pages/Home";
-import Navbar from "./components/Navbar";
-import ProtectedRoutes from "./utils/ProtectedRoutes";
-import ContextProviders from "./contexts";
+import Login from "./pages/Login";
 import Upload from "./pages/Upload";
+import Register from "./pages/Register";
+import Checkout from "./pages/Checkout";
+import Navbar from "./components/Navbar";
+import ContextProviders from "./contexts";
+import ProtectedRoutes from "./utils/ProtectedRoutes";
+import { BrowserRouter, Route, Routes, Outlet } from "react-router-dom";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
             <Route element={<Screen />}>
               <Route path="/" Component={Home} />
               <Route path="/upload" Component={Upload} />
+              <Route path="/checkout" Component={Checkout} />
             </Route>
           </Route>
         </Routes>

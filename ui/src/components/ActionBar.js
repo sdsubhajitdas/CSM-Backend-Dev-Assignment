@@ -12,6 +12,7 @@ export default function ActionBar() {
       <ActionBarButton
         icon={<DollarSign className="inline" />}
         text="Upgrade to Pro tier"
+        link="/checkout"
       />
     </div>
   );

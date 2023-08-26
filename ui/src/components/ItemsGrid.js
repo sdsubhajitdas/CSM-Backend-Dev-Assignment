@@ -1,6 +1,5 @@
 import useAuthentication from "../hooks/useAuthentication";
 import { Download } from "lucide-react";
-import { Link } from "react-router-dom";
 
 export default function ItemsGrid({ images }) {
   const {
