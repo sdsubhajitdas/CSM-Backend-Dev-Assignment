@@ -18,9 +18,15 @@ export default function Upload() {
 
   const { error, isError, isLoading, isSuccess, mutate } = useMutation({
     mutationFn: () => {
-      const formData = new FormData();
-      formData.append("file", selectedFiles[0]);
-      return axios.post("/api/file/upload", formData);
+      if (user.subscription.tier === "FREE") {
+        const formData = new FormData();
+        formData.append("file", selectedFiles[0]);
+        return axios.post("/api/file/upload", formData);
+      } else {
+        const formData = new FormData();
+        selectedFiles.forEach((file) => formData.append("file", file));
+        return axios.post("/api/file/uploads", formData);
+      }
     },
     onSuccess: () => {
       queryClient.refetchQueries({ queryKey: ["get_images"] });

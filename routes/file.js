@@ -31,7 +31,7 @@ const upload = multer({
   }),
 });
 
-function applyUploadConstraints(req, res, next) {
+function applyUploadConstraintsToFreeTier(req, res, next) {
   if (req.user.subscription.tier === "PRO") return next();
 
   let timeDifference = Math.ceil(
@@ -46,6 +46,13 @@ function applyUploadConstraints(req, res, next) {
   });
 }
 
+function applyUploadConstraintsToProTier(req, res, next) {
+  if (req.user.subscription.tier === "PRO") return next();
+  res.status(403).send({
+    message: "Multiple file uploads only authorized for Pro tier subscription",
+  });
+}
+
 function uploadFolderPreprocessor(req, res, next) {
   req.uploadFolder = `${req.user.email}-${req.user._id}`;
   next();
@@ -53,7 +60,7 @@ function uploadFolderPreprocessor(req, res, next) {
 
 router.post(
   "/upload",
-  applyUploadConstraints,
+  applyUploadConstraintsToFreeTier,
   uploadFolderPreprocessor,
   upload.single("file"),
   async (req, res, next) => {
@@ -71,6 +78,33 @@ router.post(
       });
 
       res.status(201).send(image);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+router.post(
+  "/uploads",
+  applyUploadConstraintsToProTier,
+  uploadFolderPreprocessor,
+  upload.array("file"),
+  async (req, res, next) => {
+    try {
+      let images = req.files.map((file) => ({
+        fileName: file.originalname,
+        url: file.location,
+        userId: req.user._id,
+        path: file.key,
+        uploadMetadata: file,
+      }));
+
+      images = await Image.insertMany(images);
+      await User.findByIdAndUpdate(req.user._id, {
+        lastUploadTimestamp: Date.now() * 1000,
+      });
+
+      res.status(201).send(images);
     } catch (error) {
       next(error);
     }

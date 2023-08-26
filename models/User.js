@@ -6,7 +6,10 @@ const userSchema = Schema({
   email: { type: String, required: true },
   password: { type: String, required: true },
   createTimestamp: { type: Date, default: Date.now },
-  lastUploadTimestamp: { type: Date },
+  lastUploadTimestamp: {
+    type: Date,
+    default: +new Date() - 1 * 24 * 60 * 60 * 1000,
+  },
   subscription: {
     tier: { type: String, enum: ["FREE", "PRO"], default: "FREE" },
     createTimestamp: { type: Date, default: null },
